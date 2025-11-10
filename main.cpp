@@ -41,7 +41,7 @@ struct FontEx
 			if (localname.length()) {
 				// 実ファイルが存在した場合
 				int ret;
-				if ((ret =  AddFontResourceEx(localname.c_str(), FR_PRIVATE, NULL)) > 0) {
+				if ((ret =  AddFontResourceEx((const wchar_t*)localname.c_str(), FR_PRIVATE, NULL)) > 0) {
 					fontlist.push_back(localname);
 				}
 				if (result) {
@@ -56,7 +56,7 @@ struct FontEx
 						// テンポラリファイル作成
 						ttstr tempFile = TVPGetTemporaryName();
 						HANDLE hFile;
-						if ((hFile = CreateFile(tempFile.c_str(), GENERIC_WRITE, 0, NULL,
+						if ((hFile = CreateFile((const wchar_t*)tempFile.c_str(), GENERIC_WRITE, 0, NULL,
 												CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL)) == INVALID_HANDLE_VALUE) {
 							in->Release();
 							return TJS_S_OK;
@@ -70,10 +70,10 @@ struct FontEx
 						CloseHandle(hFile);
 						in->Release();
 						int ret;
-						if ((ret =  AddFontResourceEx(tempFile.c_str(), FR_PRIVATE, NULL)) > 0) {
+						if ((ret =  AddFontResourceEx((const wchar_t*)tempFile.c_str(), FR_PRIVATE, NULL)) > 0) {
 							tempfontlist.push_back(tempFile);
 						} else {
-							DeleteFile(tempFile.c_str());
+							DeleteFile((const wchar_t*)tempFile.c_str());
 						}
 						if (result) {
 							*result = ret;
@@ -122,11 +122,11 @@ NCB_ATTACH_CLASS(FontEx, System) {
 void PostUnregistCallback()
 {
 	for (vector<ttstr>::iterator i = fontlist.begin(); i != fontlist.end(); i++) {
-		RemoveFontResourceEx(i->c_str(), FR_PRIVATE, NULL);
+		RemoveFontResourceEx((const wchar_t*)i->c_str(), FR_PRIVATE, NULL);
 	}
 	for (vector<ttstr>::iterator i = tempfontlist.begin(); i != tempfontlist.end(); i++) {
-		RemoveFontResourceEx(i->c_str(), FR_PRIVATE, NULL);
-		DeleteFile(i->c_str());
+		RemoveFontResourceEx((const wchar_t*)i->c_str(), FR_PRIVATE, NULL);
+		DeleteFile((const wchar_t*)i->c_str());
 	}
 	for (vector<HANDLE>::iterator i = memfontlist.begin(); i != memfontlist.end(); i++) {
 		RemoveFontMemResourceEx(*i);
